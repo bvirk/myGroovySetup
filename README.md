@@ -74,3 +74,7 @@ groovy$ ./gr-clean myApp
 
 The source code is not removed.
  
+##### needed improvement
+
+avoid ensure targets on compile/run and make a conf wrapper for creating a source file
+that could make it possible to make programs not having all utils stuff (manual removing symlinks)
