@@ -1,0 +1,4 @@
+#!/bin/dash
+project=`basename $0`
+cd ~/documents/devel/groovy/classes/$project
+java -cp ${GROOVY_HOME}/lib/*:. cg.$project  "$@"

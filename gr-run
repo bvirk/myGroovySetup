@@ -1,0 +1,2 @@
+#!/bin/sh
+ant -e run -Dprojectname=$1 -Darg0=$2 -Darg1=$3 -Darg2=$4 -Darg3=$5 

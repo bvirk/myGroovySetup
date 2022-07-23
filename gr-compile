@@ -1,0 +1,2 @@
+#!/bin/sh
+ant -e compile -Dprojectname=$1

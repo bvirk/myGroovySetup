@@ -1,0 +1,16 @@
+#/bin/bash
+
+# obsolete - this is now automatically done by ant
+# just for experimenting some time
+
+function mksl() {
+    if [ ! -e `basename $1` ]; then
+        ln -s $1 `basename $1`
+    fi
+}
+## cd src/play/cg/
+## mksl ../../utils/cg/Print.groovy
+## mksl ../../utils/cg/MachineSettings.groovy 
+## mksl ../../utils/cg/Dirutils.groovy
+## mksl ../../utils/cg/Jimport.groovy
+## mksl ../../utils/cg/ConsoleInput.groovy

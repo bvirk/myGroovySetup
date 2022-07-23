@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<!-- CHANGE PROJECT NAME and repeat (execute ant run, edit) to achieve the result
+- remember touch for re-use of old source  
+- 
+-->
+<project name="allInOne" basedir="." default="compile" >
+	
+	<property name="curProject" value="${projectname}" />
+	<property environment="env"/>
+	<property name="groovy.libs" value="${env.GROOVY_HOME}/lib"/>
+	<property name="srcfile" value="${basedir}/src/${curProject}/cg/${curProject}.groovy" /> 
+	<property name="deploypath" value="${env.HOME}/bin" />
+	
+	<taskdef name="groovyc" classname="org.codehaus.groovy.ant.Groovyc" >
+		<classpath>
+			<fileset file="${groovy.libs}/groovy-ant-4.0.2.jar"/>
+			<fileset file="${groovy.libs}/groovy-4.0.2.jar"/>
+		</classpath>
+	</taskdef>
+
+	<taskdef name="groovy" classname="org.codehaus.groovy.ant.Groovy" >
+		<classpath>
+			<fileset file="${groovy.libs}/groovy-ant-4.0.2.jar"/>
+			<fileset file="${groovy.libs}/groovy-4.0.2.jar"/>
+		</classpath>
+	</taskdef>
+
+	<target name="run" depends="compile"  > 
+		<exec executable="dash" >
+			<arg value="-c"/>
+			<arg value="${curProject} ${arg0} ${arg1} ${arg2} ${arg3}" />
+		</exec>
+	</target>
+	
+	<target name="clean" >
+		<delete dir="classes/${curProject}" />
+		<delete file="${deploypath}/${curProject}" />
+	</target>
+	
+	<target name="compile" depends="ensureFiles"> 
+		<groovyc 
+			srcdir="src/${curProject}/cg" 
+			destdir="classes/${curProject}" 
+			classpath="${groovy.libs}/*:." 
+			fork="true"
+			includeantruntime="false" 
+		/>
+	</target>
+	
+	<target name="ensureFiles">
+		<mkdir dir="src/${curProject}/cg" />
+		<mkdir dir="classes/${curProject}" />
+		<antcall target="ensuresymlink" />
+		<antcall target="ensuresrc" />
+		<antcall target="ensuredeployed" />
+    </target>
+
+
+	<target name="ensuresymlink" >
+		<groovy>
+			def project = properties.'curProject'
+			def cwd = properties.'user.dir'
+			
+			for (File f: new File("${cwd}/src/utils/cg").listFiles()) {
+				def linked= new File("${cwd}/src/${project}/cg/"+f.getName())
+				if (!linked.exists())
+					java.nio.file.Files.createSymbolicLink(linked.toPath(),f.toPath())
+			}
+  		</groovy>
+	</target>
+
+	<target name="srcexist">
+    	<available file="${srcfile}" property="srcfile.present"/>
+	</target>
+
+	<target name="ensuresrc" depends="srcexist" unless="srcfile.present">
+		<echo file="${srcfile}" message="package cg;println 'empty App'" />
+	</target> 
+	
+	<target name="binexist">
+    	<available file="${deploypath}/${curProject}" property="isdeployed"/>
+	</target>
+
+	<target name="ensuredeployed" depends="binexist" unless="isdeployed">
+		<symlink link="${deploypath}/${curProject}" resource="${basedir}/asDash" />
+	</target>
+	
+</project>
